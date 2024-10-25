@@ -228,14 +228,12 @@
         function highlightCurrentBeat() {
             const beatDivs = document.querySelectorAll('.beat');
             beatDivs.forEach(beatDiv => {
-                const trackIndex = parseInt(beatDiv.dataset.track);
-                const beatIndex = parseInt(beatDiv.dataset.beat);
-                if (beatIndex === currentBeat) {
-                    beatDiv.classList.add('current-beat');
+                const beat = parseInt(beatDiv.dataset.beat);
+                if (beat === currentBeat) {
+                    beatDiv.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
                 } else {
-                    beatDiv.classList.remove('current-beat');
+                    beatDiv.style.backgroundColor = beatGrid[beatDiv.dataset.track][beat] ? '#00ff00' : '#333';
                 }
-                beatDiv.classList.toggle('active', beatGrid[trackIndex][beatIndex]);
             });
         }
 
