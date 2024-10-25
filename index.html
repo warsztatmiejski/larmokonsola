@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Beatmaker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            background: #282c34;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        #beatmaker-container {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            gap: 2px;
+        }
+        #beatmaker {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+            height: 100%;
+        }
+        .track {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            padding: 5px;
+        }
+        .beat-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 2px;
+            width: 100%;
+            height: 100%;
+        }
+        .beat {
+            width: 100%;
+            height: 100%;
+            background: #333;
+            cursor: pointer;
+        }
+        .beat.active {
+            background: #00ff00;
+        }
+        #controls {
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: #333;
+            box-sizing: border-box;
+        }
+        #logo {
+            font-size: 1.5em;
+        }
+        #global-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #play-pause {
+            padding: 10px;
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        #tempo-slider {
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div id="beatmaker-container" class="container-fluid">
+        <div id="controls" class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div id="logo" class="mb-2 mb-md-0">Simple Beatmaker</div>
+            <div id="global-controls" class="d-flex align-items-center gap-3">
+                <button id="play-pause" class="btn btn-primary">Play</button>
+                <div class="d-flex align-items-center">
+                    <label for="tempo-slider" class="form-label me-2">Tempo:</label>
+                    <input type="range" id="tempo-slider" class="form-range" min="60" max="180" value="100">
+                    <span id="bpm-value" class="ms-2">100 BPM</span>
+                </div>
+            </div>
+        </div>
+        <div id="beatmaker"></div>
+    </div>
+    <script>
+        const audioFolder = 'audio/';
+        const soundLibrary = [
+            { name: 'kick.wav', image: 'kick.png' },
+            { name: 'snare.wav', image: 'snare.png' },
+            { name: 'hihat.wav', image: 'hihat.png' },
+            { name: 'tom.wav', image: 'tom.png' }
+        ];
+
+        const numTracks = Math.min(soundLibrary.length, 4);
+        const numBeats = 16;
+        let beatGrid = Array.from({ length: numTracks }, () => Array(numBeats).fill(false));
+        let currentBeat = 0;
+        let isPlaying = false;
+        let tempo = 100;
+        let intervalId;
+
+        const beatmakerDiv = document.getElementById('beatmaker');
+        const playPauseButton = document.getElementById('play-pause');
+        const tempoSlider = document.getElementById('tempo-slider');
+        const bpmValue = document.getElementById('bpm-value');
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let soundBuffers = [];
+        let playbackRates = Array(numTracks).fill(1.0);
+
+        // Load audio files into buffers
+        async function loadSounds() {
+            for (let sound of soundLibrary) {
+                const response = await fetch(audioFolder + sound.name);
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                soundBuffers.push(audioBuffer);
+            }
+        }
+
+        function createTrackControls() {
+            for (let i = 0; i < numTracks; i++) {
+                const trackDiv = document.createElement('div');
+                trackDiv.classList.add('track');
+
+                const soundSelect = document.createElement('select');
+                soundSelect.classList.add('form-select');
+                soundLibrary.forEach((sound, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = sound.name;
+                    if (index === i) option.selected = true;
+                    soundSelect.appendChild(option);
+                });
+                soundSelect.addEventListener('change', (e) => {
+                    soundBuffers[i] = soundBuffers[e.target.value];
+                });
+                trackDiv.appendChild(soundSelect);
+
+                const playbackRateLabel = document.createElement('label');
+                playbackRateLabel.textContent = 'Playback Rate:';
+                playbackRateLabel.classList.add('form-label');
+                playbackRateLabel.style.marginLeft = '10px';
+                const playbackRateInput = document.createElement('input');
+                playbackRateInput.type = 'range';
+                playbackRateInput.classList.add('form-range');
+                playbackRateInput.min = '0.5';
+                playbackRateInput.max = '2.0';
+                playbackRateInput.step = '0.1';
+                playbackRateInput.value = '1.0';
+                playbackRateInput.addEventListener('input', (e) => {
+                    playbackRates[i] = parseFloat(e.target.value);
+                });
+                trackDiv.appendChild(playbackRateLabel);
+                trackDiv.appendChild(playbackRateInput);
+
+                const beatGridDiv = document.createElement('div');
+                beatGridDiv.classList.add('beat-grid');
+
+                for (let beat = 0; beat < numBeats; beat++) {
+                    const beatDiv = document.createElement('div');
+                    beatDiv.classList.add('beat');
+                    beatDiv.dataset.track = i;
+                    beatDiv.dataset.beat = beat;
+                    beatDiv.addEventListener('click', () => {
+                        beatGrid[i][beat] = !beatGrid[i][beat];
+                        beatDiv.classList.toggle('active');
+                    });
+                    beatGridDiv.appendChild(beatDiv);
+                }
+                trackDiv.appendChild(beatGridDiv);
+                beatmakerDiv.appendChild(trackDiv);
+            }
+        }
+
+        function playBeat() {
+            for (let track = 0; track < numTracks; track++) {
+                if (beatGrid[track][currentBeat]) {
+                    playSound(soundBuffers[track], playbackRates[track]);
+                }
+            }
+            currentBeat = (currentBeat + 1) % numBeats;
+            highlightCurrentBeat();
+        }
+
+        function playSound(buffer, rate) {
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.playbackRate.value = rate;
+            source.connect(audioContext.destination);
+            source.start();
+        }
+
+        function highlightCurrentBeat() {
+            const beatDivs = document.querySelectorAll('.beat');
+            beatDivs.forEach(beatDiv => {
+                const beat = parseInt(beatDiv.dataset.beat);
+                if (beat === currentBeat) {
+                    beatDiv.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+                } else {
+                    beatDiv.style.backgroundColor = beatGrid[beatDiv.dataset.track][beat] ? '#00ff00' : '#333';
+                }
+            });
+        }
+
+        function togglePlayPause() {
+            if (isPlaying) {
+                clearInterval(intervalId);
+                playPauseButton.textContent = 'Play';
+                playPauseButton.classList.remove('btn-danger');
+                playPauseButton.classList.add('btn-primary');
+            } else {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        intervalId = setInterval(playBeat, (60000 / tempo) / 4);
+                        playPauseButton.textContent = 'Pause';
+                        playPauseButton.classList.remove('btn-primary');
+                        playPauseButton.classList.add('btn-danger');
+                    });
+                } else {
+                    intervalId = setInterval(playBeat, (60000 / tempo) / 4);
+                    playPauseButton.textContent = 'Pause';
+                    playPauseButton.classList.remove('btn-primary');
+                    playPauseButton.classList.add('btn-danger');
+                }
+            }
+            isPlaying = !isPlaying;
+        }
+
+        playPauseButton.addEventListener('click', togglePlayPause);
+
+        tempoSlider.addEventListener('input', (e) => {
+            tempo = e.target.value;
+            bpmValue.textContent = `${tempo} BPM`;
+            if (isPlaying) {
+                clearInterval(intervalId);
+                intervalId = setInterval(playBeat, (60000 / tempo) / 4);
+            }
+        });
+
+        createTrackControls();
+        loadSounds().then(() => {
+            highlightCurrentBeat();
+            // Playback will start only when the play button is clicked
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
