@@ -7,6 +7,8 @@
     <title>Larmokonsola – Warsztat Miejski</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <style>
         /* General Styles */
         body {
@@ -51,7 +53,10 @@
             gap: 10px;
         }
 
-        #play-pause {
+        #global-controls .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 10px;
             background: #444;
             border: none;
@@ -80,8 +85,6 @@
             gap: 2px;
             margin-top: 8px; /* 8px gap between tracks */
             flex: 1; /* Make tracks fill available height */
-            /* Removed border-bottom */
-            /* Removed background color */
         }
 
         /* Controls Wrapper */
@@ -113,7 +116,6 @@
         .control-wrapper .form-range {
             position: relative;
             z-index: 1;
-            /*mix-blend-mode: normal;*/
         }
 
         /* Beat Grid */
@@ -136,7 +138,6 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            /* Removed background color */
         }
 
         /* Selected Beat Background Color */
@@ -159,14 +160,13 @@
         .beat.active .beat-image {
             opacity: 1;
         }
+
         .beat.highlight {
             background-color: rgba(255, 255, 255, 0.35);
         }
+
         .beat.highlight.active {
             background-color: rgba(255, 255, 255, 0.95);
-        }
-        .beat.highlight .beat-image {
-            /* opacity: 0.5; */
         }
 
         /* Responsive Styles */
@@ -190,9 +190,10 @@
         <div id="controls">
             <div id="logo">Larmokonsola</div>
             <div id="global-controls">
-                <button id="play-pause" class="btn btn-primary">Play</button>
+                <button id="play-pause" class="btn btn-primary"><i class="bi bi-play-fill"></i></button>
+                <button id="stop" class="btn btn-secondary"><i class="bi bi-stop-fill"></i></button>
                 <div class="d-flex align-items-center">
-                    <label for="tempo-slider" class="form-label me-2">Tempo:</label>
+                    <label for="tempo-slider" class="form-label me-2"><i class="bi bi-speedometer2"></i></label>
                     <input type="range" id="tempo-slider" class="form-range" min="60" max="180" value="100">
                     <span id="bpm-value" class="ms-2">100 BPM</span>
                 </div>
@@ -206,11 +207,12 @@
         // Audio and Sound Management Module
         const AudioModule = (() => {
             const audioFolder = 'audio/';
+            const imageFolder = 'images/';
             const soundLibrary = [
-                { name: 'kick.wav', image: 'images/kick.png' },
-                { name: 'snare.wav', image: 'images/snare.png' },
-                { name: 'hihat.wav', image: 'images/hihat.png' },
-                { name: 'tom.wav', image: 'images/tom.png' }
+                { name: 'kick.wav', image: 'kick.png' },
+                { name: 'snare.wav', image: 'snare.png' },
+                { name: 'hihat.wav', image: 'hihat.png' },
+                { name: 'tom.wav', image: 'tom.png' }
                 // Add more sounds as needed
             ];
 
@@ -235,13 +237,14 @@
                 audioContext,
                 soundLibrary,
                 soundBuffers,
-                loadSounds
+                loadSounds,
+                imageFolder
             };
         })();
 
         // Beatmaker Module
         const BeatmakerModule = (() => {
-            const { audioContext, soundLibrary, soundBuffers, loadSounds } = AudioModule;
+            const { audioContext, soundLibrary, soundBuffers, loadSounds, imageFolder } = AudioModule;
 
             const numTracks = soundLibrary.length;
             const numBeats = 16;
@@ -259,6 +262,7 @@
 
             const beatmakerDiv = document.getElementById('beatmaker');
             const playPauseButton = document.getElementById('play-pause');
+            const stopButton = document.getElementById('stop');
             const tempoSlider = document.getElementById('tempo-slider');
             const bpmValue = document.getElementById('bpm-value');
 
@@ -285,19 +289,24 @@
 
                     const controlWrapper = document.createElement('div');
                     controlWrapper.classList.add('control-wrapper');
-                    controlWrapper.style.setProperty('--beat-color', trackColors[i]);
+
+                    // Use trackColors[i] directly
+                    const beatColor = trackColors[i];
+
+                    // Set CSS variable for beat color
+                    controlWrapper.style.setProperty('--beat-color', beatColor);
 
                     // Create control background div
                     const controlBgDiv = document.createElement('div');
                     controlBgDiv.classList.add('control-bg');
-                    controlBgDiv.style.backgroundImage = `url(${soundLibrary[i].image})`;
+                    controlBgDiv.style.backgroundImage = `url(${imageFolder}${soundLibrary[i].image})`;
 
                     controlWrapper.appendChild(controlBgDiv);
 
                     // Volume Slider
                     const volumeLabel = document.createElement('label');
-                    volumeLabel.textContent = 'Volume';
                     volumeLabel.classList.add('form-label');
+                    volumeLabel.innerHTML = '<i class="bi bi-volume-up"></i>';
 
                     const volumeInput = document.createElement('input');
                     volumeInput.type = 'range';
@@ -313,8 +322,8 @@
 
                     // Playback Rate Slider
                     const rateLabel = document.createElement('label');
-                    rateLabel.textContent = 'Rate';
                     rateLabel.classList.add('form-label');
+                    rateLabel.innerHTML = '<i class="bi bi-speedometer2"></i>';
 
                     const playbackRateInput = document.createElement('input');
                     playbackRateInput.type = 'range';
@@ -343,17 +352,15 @@
                         beatDiv.dataset.track = i;
                         beatDiv.dataset.beat = beat;
 
-                        // Remove background color from beatDiv
-
                         // Create beatImageDiv inside beatDiv
                         const beatImageDiv = document.createElement('div');
                         beatImageDiv.classList.add('beat-image');
-                        beatImageDiv.style.backgroundImage = `url(${soundLibrary[i].image})`;
+                        beatImageDiv.style.backgroundImage = `url(${imageFolder}${soundLibrary[i].image})`;
 
                         beatDiv.appendChild(beatImageDiv);
 
                         // Set CSS variable for beat color when selected
-                        beatDiv.style.setProperty('--beat-color', trackColors[i]);
+                        beatDiv.style.setProperty('--beat-color', beatColor);
 
                         beatDiv.addEventListener('click', () => {
                             beatGrid[i][beat] = !beatGrid[i][beat];
@@ -369,6 +376,7 @@
             // Event Listeners
             function setupEventListeners() {
                 playPauseButton.addEventListener('click', togglePlayPause);
+                stopButton.addEventListener('click', stopPlayback);
 
                 tempoSlider.addEventListener('input', (e) => {
                     tempo = e.target.value;
@@ -418,28 +426,29 @@
 
             // Highlight Beat
             function highlightBeat(beatNumber) {
+                // Remove 'highlight' class from all beats
+                const highlightedBeats = document.querySelectorAll('.beat.highlight');
+                highlightedBeats.forEach(beatDiv => {
+                    beatDiv.classList.remove('highlight');
+                });
+
+                // Add 'highlight' class to current beats
                 for (let track = 0; track < numTracks; track++) {
                     const beatDiv = document.querySelector(`.beat[data-track='${track}'][data-beat='${beatNumber}']`);
                     if (beatDiv) {
-                        const beatImageDiv = beatDiv.querySelector('.beat-image');
-                        if (beatImageDiv) {
-                            beatDiv.classList.add('highlight');
-                            setTimeout(() => {
-                                beatDiv.classList.remove('highlight');
-                            }, (60 / tempo) * 250); // Adjust the duration as needed
-                        }
+                        beatDiv.classList.add('highlight');
                     }
                 }
             }
 
-            // Generate Random Color
+            // Generate Random Color with Controlled Saturation and Lightness
             function getRandomColor() {
                 // Generate a random hue between 0 and 360 degrees
                 const hue = Math.floor(Math.random() * 360);
                 // Set saturation between 70% and 100% for vivid colors
                 const saturation = Math.floor(Math.random() * (100 - 70 + 1)) + 70; // 70% to 100%
-                // Set lightness between 40% and 60% to avoid too dark or too light colors
-                const lightness = Math.floor(Math.random() * (40 - 20 + 1)) + 20; // 40% to 60%
+                // Set lightness between 20% and 40% to avoid too dark or too light colors
+                const lightness = Math.floor(Math.random() * (40 - 20 + 1)) + 20; // 20% to 40%
 
                 // Return the HSL color string
                 return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
@@ -450,21 +459,39 @@
                 if (isPlaying) {
                     clearInterval(timerID);
                     isPlaying = false;
-                    playPauseButton.textContent = 'Play';
+                    playPauseButton.innerHTML = '<i class="bi bi-play-fill"></i>';
                     playPauseButton.classList.remove('btn-danger');
                     playPauseButton.classList.add('btn-primary');
+                    // Do not remove highlight to keep it on current beat
                 } else {
                     if (audioContext.state === 'suspended') {
                         audioContext.resume();
                     }
-                    currentBeat = 0;
                     scheduledTime = audioContext.currentTime;
                     timerID = setInterval(scheduler, lookahead);
                     isPlaying = true;
-                    playPauseButton.textContent = 'Pause';
+                    playPauseButton.innerHTML = '<i class="bi bi-pause-fill"></i>';
                     playPauseButton.classList.remove('btn-primary');
                     playPauseButton.classList.add('btn-danger');
                 }
+            }
+
+            // Stop Playback
+            function stopPlayback() {
+                if (isPlaying) {
+                    clearInterval(timerID);
+                    isPlaying = false;
+                    playPauseButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+                    playPauseButton.classList.remove('btn-danger');
+                    playPauseButton.classList.add('btn-primary');
+                }
+                currentBeat = 0;
+                scheduledTime = audioContext.currentTime;
+                // Remove highlight from all beats
+                const highlightedBeats = document.querySelectorAll('.beat.highlight');
+                highlightedBeats.forEach(beatDiv => {
+                    beatDiv.classList.remove('highlight');
+                });
             }
 
             // Update UI
