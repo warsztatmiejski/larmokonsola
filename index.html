@@ -1,88 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta Tags and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Beatmaker</title>
+    <title>Larmokonsola – Warsztat Miejski</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .input-wrapper {
-            width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-        .current-beat {
-            background-color: rgba(255, 255, 0, 0.2);
-        }
+        /* General Styles */
         body {
             margin: 0;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
-            background: #282c34;
+            background: #000000;
             color: white;
             display: flex;
             flex-direction: column;
         }
+
+        /* Beatmaker Container */
         #beatmaker-container {
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            gap: 2px;
-        }
-        #beatmaker {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 2px;
             width: 100%;
             height: 100%;
         }
-        .track {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            padding: 5px;
-        }
-        .beat-grid {
-            display: grid;
-            grid-template-columns: repeat(16, 1fr);
-            gap: 2px;
-            width: 100%;
-            height: 100%;
-        }
-        .beat {
-            width: 100%;
-            height: 100%;
-            background: #333;
-            cursor: pointer;
-        }
-        .beat.active {
-            background: #00ff00;
-        }
-        .beat:nth-child(4n) {
-            border-right: 2px solid #555;
-        }
+
+        /* Controls */
         #controls {
-            margin-top: 2px;
             display: flex;
-            align-items: center;
+            flex-direction: row;
             justify-content: space-between;
+            align-items: center;
             padding: 10px;
-            background: #333;
+            background: #222;
             box-sizing: border-box;
         }
+
         #logo {
             font-size: 1.5em;
+            margin: 0;
         }
+
         #global-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         #play-pause {
             padding: 10px;
             background: #444;
@@ -90,16 +58,138 @@
             color: white;
             cursor: pointer;
         }
+
         #tempo-slider {
             width: 150px;
+        }
+
+        /* Beatmaker Grid */
+        #beatmaker {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        /* Track */
+        .track {
+            display: flex;
+            align-items: stretch;
+            gap: 2px;
+            margin-top: 8px; /* 8px gap between tracks */
+            flex: 1; /* Make tracks fill available height */
+            /* Removed border-bottom */
+            /* Removed background color */
+        }
+
+        /* Controls Wrapper */
+        .control-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            min-width: 80px;
+            padding: 8px;
+            background-color: var(--beat-color);
+        }
+
+        /* Control Background */
+        .control-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            mix-blend-mode: overlay; /* Use overlay blend mode */
+        }
+
+        /* Ensure controls are displayed normally */
+        .control-wrapper .form-label,
+        .control-wrapper .form-range {
+            position: relative;
+            z-index: 1;
+            /*mix-blend-mode: normal;*/
+        }
+
+        /* Beat Grid */
+        .beat-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 2px;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Beat */
+        .beat {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background-color: #222;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Removed background color */
+        }
+
+        /* Selected Beat Background Color */
+        .beat.active {
+            background-color: var(--beat-color); /* Use CSS variable for color */
+        }
+
+        .beat .beat-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            mix-blend-mode: overlay; /* Use overlay blend mode */
+        }
+
+        .beat.active .beat-image {
+            opacity: 1;
+        }
+        .beat.highlight {
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+        .beat.highlight.active {
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        .beat.highlight .beat-image {
+            /* opacity: 0.5; */
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            #global-controls {
+                flex-direction: column;
+            }
+
+            .control-wrapper {
+                min-width: 60px;
+            }
+
+            .beat-grid {
+                grid-template-columns: repeat(16, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-    <div id="beatmaker-container" class="container-fluid">
-        <div id="controls" class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <div id="logo" class="mb-2 mb-md-0">Simple Beatmaker</div>
-            <div id="global-controls" class="d-flex align-items-center gap-3">
+    <div id="beatmaker-container">
+        <div id="controls">
+            <div id="logo">Larmokonsola</div>
+            <div id="global-controls">
                 <button id="play-pause" class="btn btn-primary">Play</button>
                 <div class="d-flex align-items-center">
                     <label for="tempo-slider" class="form-label me-2">Tempo:</label>
@@ -110,174 +200,284 @@
         </div>
         <div id="beatmaker"></div>
     </div>
+
+    <!-- JavaScript Code -->
     <script>
-        const audioFolder = 'audio/';
-        const soundLibrary = [
-            { name: 'kick.wav', image: 'kick.png' },
-            { name: 'snare.wav', image: 'snare.png' },
-            { name: 'hihat.wav', image: 'hihat.png' },
-            { name: 'tom.wav', image: 'tom.png' }
-        ];
+        // Audio and Sound Management Module
+        const AudioModule = (() => {
+            const audioFolder = 'audio/';
+            const soundLibrary = [
+                { name: 'kick.wav', image: 'images/kick.png' },
+                { name: 'snare.wav', image: 'images/snare.png' },
+                { name: 'hihat.wav', image: 'images/hihat.png' },
+                { name: 'tom.wav', image: 'images/tom.png' }
+                // Add more sounds as needed
+            ];
 
-        const numTracks = Math.min(soundLibrary.length, 4);
-        const numBeats = 16;
-        let beatGrid = Array.from({ length: numTracks }, () => Array(numBeats).fill(false));
-        let currentBeat = 0;
-        let isPlaying = false;
-        let tempo = 100;
-        let intervalId;
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            let soundBuffers = [];
 
-        const beatmakerDiv = document.getElementById('beatmaker');
-        const playPauseButton = document.getElementById('play-pause');
-        const tempoSlider = document.getElementById('tempo-slider');
-        const bpmValue = document.getElementById('bpm-value');
-
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        let soundBuffers = [];
-        let playbackRates = Array(numTracks).fill(1.0);
-
-        // Load audio files into buffers
-        async function loadSounds() {
-            for (let sound of soundLibrary) {
-                const response = await fetch(audioFolder + sound.name);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-                soundBuffers.push(audioBuffer);
-            }
-        }
-
-        function createTrackControls() {
-            for (let i = 0; i < numTracks; i++) {
-                const trackDiv = document.createElement('div');
-                trackDiv.classList.add('track');
-
-                const wrapperDiv = document.createElement('div');
-                wrapperDiv.classList.add('input-wrapper');
-
-                trackDiv.appendChild(wrapperDiv);
-
-                const soundSelect = document.createElement('select');
-                soundSelect.classList.add('form-select');
-                soundLibrary.forEach((sound, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = sound.name;
-                    if (index === i) option.selected = true;
-                    soundSelect.appendChild(option);
-                });
-                soundSelect.addEventListener('change', async (e) => {
+            // Load audio files into buffers
+            async function loadSounds() {
+                for (let sound of soundLibrary) {
                     try {
-                        const response = await fetch(audioFolder + soundLibrary[e.target.value].name);
+                        const response = await fetch(audioFolder + sound.name);
                         const arrayBuffer = await response.arrayBuffer();
-                        soundBuffers[i] = await audioContext.decodeAudioData(arrayBuffer);
+                        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                        soundBuffers.push(audioBuffer);
                     } catch (error) {
-                        console.error(`Failed to load sound: ${soundLibrary[e.target.value].name}`, error);
+                        console.error(`Failed to load sound: ${sound.name}`, error);
                     }
-                });
-                wrapperDiv.appendChild(soundSelect);
-
-                const playbackRateInput = document.createElement('input');
-                playbackRateInput.type = 'range';
-                playbackRateInput.classList.add('form-range');
-                playbackRateInput.min = '0.5';
-                playbackRateInput.max = '2.0';
-                playbackRateInput.step = '0.1';
-                playbackRateInput.value = '1.0';
-                playbackRateInput.addEventListener('input', (e) => {
-                    playbackRates[i] = parseFloat(e.target.value);
-                });
-                wrapperDiv.appendChild(playbackRateInput);
-
-                const beatGridDiv = document.createElement('div');
-                beatGridDiv.classList.add('beat-grid');
-
-                for (let beat = 0; beat < numBeats; beat++) {
-                    const beatDiv = document.createElement('div');
-                    beatDiv.classList.add('beat');
-                    beatDiv.dataset.track = i;
-                    beatDiv.dataset.beat = beat;
-                    beatDiv.addEventListener('click', () => {
-                        beatGrid[i][beat] = !beatGrid[i][beat];
-                        beatDiv.classList.toggle('active', beatGrid[i][beat]);
-                    });
-                    beatGridDiv.appendChild(beatDiv);
-                }
-                trackDiv.appendChild(beatGridDiv);
-                beatmakerDiv.appendChild(trackDiv);
-            }
-        }
-
-        function playBeat() {
-            highlightCurrentBeat();
-            for (let track = 0; track < numTracks; track++) {
-                if (beatGrid[track][currentBeat]) {
-                    playSound(soundBuffers[track], playbackRates[track]);
                 }
             }
-            currentBeat = (currentBeat + 1) % numBeats;
-        }
 
-        function playSound(buffer, rate) {
-            const source = audioContext.createBufferSource();
-            source.buffer = buffer;
-            source.playbackRate.value = rate;
-            source.connect(audioContext.destination);
-            source.start();
-        }
+            return {
+                audioContext,
+                soundLibrary,
+                soundBuffers,
+                loadSounds
+            };
+        })();
 
-        function highlightCurrentBeat() {
-            const beatDivs = document.querySelectorAll('.beat');
-            beatDivs.forEach(beatDiv => {
-                const beat = parseInt(beatDiv.dataset.beat);
-                if (beat === currentBeat) {
-                    beatDiv.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
-                } else {
-                    beatDiv.style.backgroundColor = beatGrid[beatDiv.dataset.track][beat] ? '#00ff00' : '#333';
-                }
-            });
-        }
+        // Beatmaker Module
+        const BeatmakerModule = (() => {
+            const { audioContext, soundLibrary, soundBuffers, loadSounds } = AudioModule;
 
-        function togglePlayPause() {
-            if (isPlaying) {
-                clearInterval(intervalId);
-                playPauseButton.textContent = 'Play';
-                playPauseButton.classList.remove('btn-danger');
-                playPauseButton.classList.add('btn-primary');
-            } else {
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        intervalId = setInterval(playBeat, (60000 / tempo) / 4);
-                        playPauseButton.textContent = 'Pause';
-                        playPauseButton.classList.remove('btn-primary');
-                        playPauseButton.classList.add('btn-danger');
+            const numTracks = soundLibrary.length;
+            const numBeats = 16;
+            let beatGrid = Array.from({ length: numTracks }, () => Array(numBeats).fill(false));
+            let currentBeat = 0;
+            let isPlaying = false;
+            let tempo = 100;
+            let scheduledTime = 0;
+            let lookahead = 25.0; // How frequently to call scheduling function (in milliseconds)
+            let scheduleAheadTime = 0.1; // How far ahead to schedule audio (in seconds)
+            let timerID;
+
+            const playbackRates = Array(numTracks).fill(1.0);
+            const volumes = Array(numTracks).fill(1.0);
+
+            const beatmakerDiv = document.getElementById('beatmaker');
+            const playPauseButton = document.getElementById('play-pause');
+            const tempoSlider = document.getElementById('tempo-slider');
+            const bpmValue = document.getElementById('bpm-value');
+
+            // Create Gain Nodes for volume control
+            const gainNodes = Array(numTracks).fill(null).map(() => audioContext.createGain());
+
+            // Assign random colors to each track
+            const trackColors = Array(numTracks).fill(null).map(() => getRandomColor());
+
+            // Initialize UI
+            function init() {
+                createTrackControls();
+                loadSounds().then(() => {
+                    updateUI();
+                    setupEventListeners();
+                });
+            }
+
+            // Create Track Controls
+            function createTrackControls() {
+                for (let i = 0; i < numTracks; i++) {
+                    const trackDiv = document.createElement('div');
+                    trackDiv.classList.add('track');
+
+                    const controlWrapper = document.createElement('div');
+                    controlWrapper.classList.add('control-wrapper');
+                    controlWrapper.style.setProperty('--beat-color', trackColors[i]);
+
+                    // Create control background div
+                    const controlBgDiv = document.createElement('div');
+                    controlBgDiv.classList.add('control-bg');
+                    controlBgDiv.style.backgroundImage = `url(${soundLibrary[i].image})`;
+
+                    controlWrapper.appendChild(controlBgDiv);
+
+                    // Volume Slider
+                    const volumeLabel = document.createElement('label');
+                    volumeLabel.textContent = 'Volume';
+                    volumeLabel.classList.add('form-label');
+
+                    const volumeInput = document.createElement('input');
+                    volumeInput.type = 'range';
+                    volumeInput.classList.add('form-range');
+                    volumeInput.min = '0';
+                    volumeInput.max = '1';
+                    volumeInput.step = '0.01';
+                    volumeInput.value = '1.0';
+                    volumeInput.addEventListener('input', (e) => {
+                        volumes[i] = parseFloat(e.target.value);
+                        gainNodes[i].gain.value = volumes[i];
                     });
+
+                    // Playback Rate Slider
+                    const rateLabel = document.createElement('label');
+                    rateLabel.textContent = 'Rate';
+                    rateLabel.classList.add('form-label');
+
+                    const playbackRateInput = document.createElement('input');
+                    playbackRateInput.type = 'range';
+                    playbackRateInput.classList.add('form-range');
+                    playbackRateInput.min = '0.5';
+                    playbackRateInput.max = '2.0';
+                    playbackRateInput.step = '0.01';
+                    playbackRateInput.value = '1.0';
+                    playbackRateInput.addEventListener('input', (e) => {
+                        playbackRates[i] = parseFloat(e.target.value);
+                    });
+
+                    controlWrapper.appendChild(volumeLabel);
+                    controlWrapper.appendChild(volumeInput);
+                    controlWrapper.appendChild(rateLabel);
+                    controlWrapper.appendChild(playbackRateInput);
+
+                    trackDiv.appendChild(controlWrapper);
+
+                    const beatGridDiv = document.createElement('div');
+                    beatGridDiv.classList.add('beat-grid');
+
+                    for (let beat = 0; beat < numBeats; beat++) {
+                        const beatDiv = document.createElement('div');
+                        beatDiv.classList.add('beat');
+                        beatDiv.dataset.track = i;
+                        beatDiv.dataset.beat = beat;
+
+                        // Remove background color from beatDiv
+
+                        // Create beatImageDiv inside beatDiv
+                        const beatImageDiv = document.createElement('div');
+                        beatImageDiv.classList.add('beat-image');
+                        beatImageDiv.style.backgroundImage = `url(${soundLibrary[i].image})`;
+
+                        beatDiv.appendChild(beatImageDiv);
+
+                        // Set CSS variable for beat color when selected
+                        beatDiv.style.setProperty('--beat-color', trackColors[i]);
+
+                        beatDiv.addEventListener('click', () => {
+                            beatGrid[i][beat] = !beatGrid[i][beat];
+                            beatDiv.classList.toggle('active', beatGrid[i][beat]);
+                        });
+                        beatGridDiv.appendChild(beatDiv);
+                    }
+                    trackDiv.appendChild(beatGridDiv);
+                    beatmakerDiv.appendChild(trackDiv);
+                }
+            }
+
+            // Event Listeners
+            function setupEventListeners() {
+                playPauseButton.addEventListener('click', togglePlayPause);
+
+                tempoSlider.addEventListener('input', (e) => {
+                    tempo = e.target.value;
+                    bpmValue.textContent = `${tempo} BPM`;
+                });
+
+                // Touch support for mobile devices
+                const beatDivs = document.querySelectorAll('.beat');
+                beatDivs.forEach(beatDiv => {
+                    beatDiv.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        const track = parseInt(beatDiv.dataset.track);
+                        const beat = parseInt(beatDiv.dataset.beat);
+                        beatGrid[track][beat] = !beatGrid[track][beat];
+                        beatDiv.classList.toggle('active', beatGrid[track][beat]);
+                    });
+                });
+            }
+
+            // Play Sound
+            function playSound(buffer, time, trackIndex) {
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.playbackRate.value = playbackRates[trackIndex];
+                source.connect(gainNodes[trackIndex]).connect(audioContext.destination);
+                source.start(time);
+            }
+
+            // Scheduler
+            function scheduler() {
+                while (scheduledTime < audioContext.currentTime + scheduleAheadTime) {
+                    scheduleBeat(currentBeat, scheduledTime);
+                    scheduledTime += (60 / tempo) / 4;
+                    currentBeat = (currentBeat + 1) % numBeats;
+                }
+            }
+
+            // Schedule a Beat
+            function scheduleBeat(beatNumber, time) {
+                for (let track = 0; track < numTracks; track++) {
+                    if (beatGrid[track][beatNumber]) {
+                        playSound(soundBuffers[track], time, track);
+                    }
+                }
+                highlightBeat(beatNumber);
+            }
+
+            // Highlight Beat
+            function highlightBeat(beatNumber) {
+                for (let track = 0; track < numTracks; track++) {
+                    const beatDiv = document.querySelector(`.beat[data-track='${track}'][data-beat='${beatNumber}']`);
+                    if (beatDiv) {
+                        const beatImageDiv = beatDiv.querySelector('.beat-image');
+                        if (beatImageDiv) {
+                            beatDiv.classList.add('highlight');
+                            setTimeout(() => {
+                                beatDiv.classList.remove('highlight');
+                            }, (60 / tempo) * 250); // Adjust the duration as needed
+                        }
+                    }
+                }
+            }
+
+            // Generate Random Color
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++ ) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            // Toggle Play/Pause
+            function togglePlayPause() {
+                if (isPlaying) {
+                    clearInterval(timerID);
+                    isPlaying = false;
+                    playPauseButton.textContent = 'Play';
+                    playPauseButton.classList.remove('btn-danger');
+                    playPauseButton.classList.add('btn-primary');
                 } else {
-                    intervalId = setInterval(playBeat, (60000 / tempo) / 4);
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    currentBeat = 0;
+                    scheduledTime = audioContext.currentTime;
+                    timerID = setInterval(scheduler, lookahead);
+                    isPlaying = true;
                     playPauseButton.textContent = 'Pause';
                     playPauseButton.classList.remove('btn-primary');
                     playPauseButton.classList.add('btn-danger');
                 }
             }
-            isPlaying = !isPlaying;
-        }
 
-        playPauseButton.addEventListener('click', togglePlayPause);
-
-        tempoSlider.addEventListener('input', (e) => {
-            tempo = e.target.value;
-            bpmValue.textContent = `${tempo} BPM`;
-            if (isPlaying) {
-                clearInterval(intervalId);
-                intervalId = setInterval(playBeat, (60000 / tempo) / 4);
+            // Update UI
+            function updateUI() {
+                bpmValue.textContent = `${tempo} BPM`;
             }
-        });
 
-        createTrackControls();
-        loadSounds().then(() => {
-            highlightCurrentBeat();
-            // Playback will start only when the play button is clicked
-        });
+            return {
+                init
+            };
+        })();
+
+        // Initialize the Beatmaker
+        BeatmakerModule.init();
     </script>
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
