@@ -112,10 +112,12 @@
         }
 
         /* Ensure controls are displayed normally */
+        .control-wrapper .track-name,
         .control-wrapper .form-label,
         .control-wrapper .form-range {
             position: relative;
             z-index: 1;
+            color: white;
         }
 
         /* Beat Grid */
@@ -209,10 +211,10 @@
             const audioFolder = 'audio/';
             const imageFolder = 'images/';
             const soundLibrary = [
-                { name: 'kick.wav', image: 'kick.png' },
-                { name: 'snare.wav', image: 'snare.png' },
-                { name: 'hihat.wav', image: 'hihat.png' },
-                { name: 'tom.wav', image: 'tom.png' }
+                { name: 'Kick', audio: 'kick.wav', image: 'kick.png' },
+                { name: 'Snare', audio: 'snare.wav', image: 'snare.png' },
+                { name: 'Hi-Hat', audio: 'hihat.wav', image: 'hihat.png' },
+                { name: 'Tom', audio: 'tom.wav', image: 'tom.png' }
                 // Add more sounds as needed
             ];
 
@@ -223,12 +225,13 @@
             async function loadSounds() {
                 for (let sound of soundLibrary) {
                     try {
-                        const response = await fetch(audioFolder + sound.name);
+                        const response = await fetch(audioFolder + sound.audio);
                         const arrayBuffer = await response.arrayBuffer();
                         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
                         soundBuffers.push(audioBuffer);
+                        console.log(`Loaded sound: ${sound.audio}`);
                     } catch (error) {
-                        console.error(`Failed to load sound: ${sound.name}`, error);
+                        console.error(`Failed to load sound: ${sound.audio}`, error);
                     }
                 }
             }
@@ -302,6 +305,12 @@
                     controlBgDiv.style.backgroundImage = `url(${imageFolder}${soundLibrary[i].image})`;
 
                     controlWrapper.appendChild(controlBgDiv);
+
+                    // Track Name
+                    const trackName = document.createElement('div');
+                    trackName.classList.add('track-name');
+                    trackName.textContent = soundLibrary[i].name;
+                    controlWrapper.appendChild(trackName);
 
                     // Volume Slider
                     const volumeLabel = document.createElement('label');
@@ -398,11 +407,13 @@
 
             // Play Sound
             function playSound(buffer, time, trackIndex) {
-                const source = audioContext.createBufferSource();
-                source.buffer = buffer;
-                source.playbackRate.value = playbackRates[trackIndex];
-                source.connect(gainNodes[trackIndex]).connect(audioContext.destination);
-                source.start(time);
+                if (buffer) {
+                    const source = audioContext.createBufferSource();
+                    source.buffer = buffer;
+                    source.playbackRate.value = playbackRates[trackIndex];
+                    source.connect(gainNodes[trackIndex]).connect(audioContext.destination);
+                    source.start(time);
+                }
             }
 
             // Scheduler
