@@ -5,13 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Larmokonsola – Warsztat Miejski</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <!-- Custom Font -->
     <style>
+        @font-face {
+            font-family: "Data 70";
+            src: url("fonts/Data70.woff2") format("woff2");
+        }
+        :root {
+            --key-color: rgb(245, 25, 0); /* Declare key color variable */
+        }
         /* General Styles */
         body {
+            font-family: "Data 70", sans-serif;
             margin: 0;
             overflow: hidden;
             height: 100vh;
@@ -43,8 +48,11 @@
         }
 
         #logo {
-            font-size: 1.5em;
+            font-size: 2em;
             margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--key-color); /* Use key color variable */
         }
 
         #global-controls {
@@ -62,10 +70,108 @@
             border: none;
             color: white;
             cursor: pointer;
+            font-size: 1.2em;
+            min-width: 60px; /* Make buttons wider */
         }
 
+        /* Button Icons */
+        #play-pause-icon,
+        #stop-icon {
+            width: 24px;
+            height: 24px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            display: inline-block;
+        }
+
+        /* Play/Pause Icon */
+        #play-pause-icon.play {
+            background-image: url('icons/play.svg');
+        }
+
+        #play-pause-icon.pause {
+            background-image: url('icons/pause.svg');
+        }
+
+        /* Stop Icon */
+        #stop-icon {
+            background-image: url('icons/stop.svg');
+        }
+
+        /* Add pressed state for play button */
+        #play-pause.active {
+            background: #666;
+        }
+
+        /* Tempo Slider */
         #tempo-slider {
             width: 150px;
+        }
+
+        /* Custom Range Input Styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: transparent;
+            margin: 5px 0;
+        }
+
+        /* BPM Slider */
+        input[type="range"].bpm-slider {
+            width: 150px;
+        }
+
+        input[type="range"].bpm-slider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #555;
+        }
+
+        input[type="range"].bpm-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 32px; /* Changed back to 32px */
+            height: 32px;
+            background: var(--key-color);
+            cursor: pointer;
+            margin-top: -14px; /* Center the thumb on the track */
+        }
+
+        /* Common Slider Styles */
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            background: #555;
+            border: none;
+            border-radius: 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--key-color);
+            cursor: pointer;
+            margin-top: -10px; /* Center the thumb on the track */
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
+        input[type="range"]:focus::-webkit-slider-runnable-track {
+            background: #666;
+        }
+
+        /* Custom Thumb Styles for Volume and Rate Sliders */
+        .volume-slider::-webkit-slider-thumb {
+            background: var(--key-color) url('icons/volume.svg') no-repeat center;
+            background-size: 16px 16px;
+        }
+
+        .rate-slider::-webkit-slider-thumb {
+            background: var(--key-color) url('icons/rate.svg') no-repeat center;
+            background-size: 16px 16px;
+        }
+
+        /* BPM Value Styling */
+        #bpm-value {
+            font-size: 1.5em;
+            margin-left: 8px;
         }
 
         /* Beatmaker Grid */
@@ -83,8 +189,8 @@
             display: flex;
             align-items: stretch;
             gap: 2px;
-            margin-top: 8px; /* 8px gap between tracks */
-            flex: 1; /* Make tracks fill available height */
+            margin-top: 8px;
+            flex: 1;
         }
 
         /* Controls Wrapper */
@@ -93,10 +199,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
             min-width: 80px;
             padding: 8px;
             background-color: var(--beat-color);
+            filter: saturate(50%);
         }
 
         /* Control Background */
@@ -108,16 +214,57 @@
             bottom: 0;
             background-size: cover;
             background-position: center;
-            mix-blend-mode: overlay; /* Use overlay blend mode */
+            mix-blend-mode: overlay;
+            opacity: 0.5;
         }
 
-        /* Ensure controls are displayed normally */
+        .control-wrapper .track-name {
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px; /* Add spacing below track name */
+        }
         .control-wrapper .track-name,
         .control-wrapper .form-label,
         .control-wrapper .form-range {
             position: relative;
             z-index: 1;
             color: white;
+            filter: saturate(100%);
+        }
+
+        /* Spacing between track range inputs */
+        .control-wrapper .sliders-container {
+            flex: 1;
+            position: relative;
+            /* Fixed width */
+            min-width: 80px;
+        }
+
+        /* Slider Wrappers */
+        .slider-wrapper {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+        }
+
+        .slider-wrapper.volume-slider-wrapper {
+            left: 0;
+        }
+
+        .slider-wrapper.rate-slider-wrapper {
+            right: 0;
+        }
+
+        /* Rotate Sliders */
+        .slider-wrapper input[type="range"] {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(270deg);
+            transform-origin: center;
+            width: 100%; /* Will be adjusted via JavaScript */
+            margin: 0;
         }
 
         /* Beat Grid */
@@ -140,12 +287,12 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            box-shadow: 0 0 30px rgba(0,0,0,0.75) inset;
         }
 
         /* Selected Beat Background Color */
         .beat.active {
-            background-color: var(--beat-color); /* Use CSS variable for color */
+            background-color: var(--beat-color);
+            box-shadow: 0 0 30px rgba(0,0,0,0.75) inset;
         }
 
         .beat .beat-image {
@@ -166,6 +313,7 @@
 
         .beat.highlight {
             background-color: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 30px rgba(0,0,0,0.85) inset;
         }
 
         .beat.highlight.active {
@@ -182,6 +330,11 @@
                 min-width: 60px;
             }
 
+            .sliders-container {
+                width: 40px;
+                min-width: 40px;
+            }
+
             .beat-grid {
                 grid-template-columns: repeat(16, 1fr);
             }
@@ -193,12 +346,15 @@
         <div id="controls">
             <div id="logo">Larmokonsola</div>
             <div id="global-controls">
-                <button id="play-pause" class="btn btn-primary"><i class="bi bi-play-fill"></i></button>
-                <button id="stop" class="btn btn-secondary"><i class="bi bi-stop-fill"></i></button>
-                <div class="d-flex align-items-center">
-                    <label for="tempo-slider" class="form-label me-2"><i class="bi bi-speedometer2"></i></label>
-                    <input type="range" id="tempo-slider" class="form-range" min="60" max="180" value="100">
-                    <span id="bpm-value" class="ms-2">100 BPM</span>
+                <button id="play-pause" class="btn">
+                    <span id="play-pause-icon" class="play"></span>
+                </button>
+                <button id="stop" class="btn">
+                    <span id="stop-icon"></span>
+                </button>
+                <div class="tempo-control">
+                    <input type="range" id="tempo-slider" class="form-range bpm-slider" min="60" max="180" value="100">
+                    <span id="bpm-value">100 BPM</span>
                 </div>
             </div>
         </div>
@@ -215,7 +371,7 @@
                 { name: 'Kick', audio: 'kick.wav', image: 'kick.png' },
                 { name: 'Snare', audio: 'snare.wav', image: 'snare.png' },
                 { name: 'Hi-Hat', audio: 'hihat.wav', image: 'hihat.png' },
-                { name: 'Tom', audio: 'tom.wav', image: 'tom.png' }
+                { name: 'Bang', audio: 'bang.wav', image: 'bang.png' }
                 // Add more sounds as needed
             ];
 
@@ -230,7 +386,6 @@
                         const arrayBuffer = await response.arrayBuffer();
                         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
                         soundBuffers.push(audioBuffer);
-                        console.log(`Loaded sound: ${sound.audio}`);
                     } catch (error) {
                         console.error(`Failed to load sound: ${sound.audio}`, error);
                     }
@@ -282,6 +437,7 @@
                 loadSounds().then(() => {
                     updateUI();
                     setupEventListeners();
+                    updateSliderWidths(); // Initial update of slider widths
                 });
             }
 
@@ -313,14 +469,18 @@
                     trackName.textContent = soundLibrary[i].name;
                     controlWrapper.appendChild(trackName);
 
-                    // Volume Slider
-                    const volumeLabel = document.createElement('label');
-                    volumeLabel.classList.add('form-label');
-                    volumeLabel.innerHTML = '<i class="bi bi-volume-up"></i>';
+                    // Sliders Container
+                    const slidersContainer = document.createElement('div');
+                    slidersContainer.classList.add('sliders-container');
 
+                    // Volume Slider Wrapper
+                    const volumeWrapper = document.createElement('div');
+                    volumeWrapper.classList.add('slider-wrapper', 'volume-slider-wrapper');
+
+                    // Volume Slider
                     const volumeInput = document.createElement('input');
                     volumeInput.type = 'range';
-                    volumeInput.classList.add('form-range');
+                    volumeInput.classList.add('form-range', 'volume-slider');
                     volumeInput.min = '0';
                     volumeInput.max = '1';
                     volumeInput.step = '0.01';
@@ -330,14 +490,16 @@
                         gainNodes[i].gain.value = volumes[i];
                     });
 
-                    // Playback Rate Slider
-                    const rateLabel = document.createElement('label');
-                    rateLabel.classList.add('form-label');
-                    rateLabel.innerHTML = '<i class="bi bi-speedometer2"></i>';
+                    volumeWrapper.appendChild(volumeInput);
 
+                    // Playback Rate Slider Wrapper
+                    const rateWrapper = document.createElement('div');
+                    rateWrapper.classList.add('slider-wrapper', 'rate-slider-wrapper');
+
+                    // Playback Rate Slider
                     const playbackRateInput = document.createElement('input');
                     playbackRateInput.type = 'range';
-                    playbackRateInput.classList.add('form-range');
+                    playbackRateInput.classList.add('form-range', 'rate-slider');
                     playbackRateInput.min = '0.5';
                     playbackRateInput.max = '2.0';
                     playbackRateInput.step = '0.01';
@@ -346,10 +508,14 @@
                         playbackRates[i] = parseFloat(e.target.value);
                     });
 
-                    controlWrapper.appendChild(volumeLabel);
-                    controlWrapper.appendChild(volumeInput);
-                    controlWrapper.appendChild(rateLabel);
-                    controlWrapper.appendChild(playbackRateInput);
+                    rateWrapper.appendChild(playbackRateInput);
+
+                    // Append slider wrappers to sliders container
+                    slidersContainer.appendChild(volumeWrapper);
+                    slidersContainer.appendChild(rateWrapper);
+
+                    // Append sliders container to control wrapper
+                    controlWrapper.appendChild(slidersContainer);
 
                     trackDiv.appendChild(controlWrapper);
 
@@ -403,6 +569,19 @@
                         beatGrid[track][beat] = !beatGrid[track][beat];
                         beatDiv.classList.toggle('active', beatGrid[track][beat]);
                     });
+                });
+
+                // Update slider widths on window resize
+                window.addEventListener('resize', updateSliderWidths);
+            }
+
+            // Update Slider Widths
+            function updateSliderWidths() {
+                const sliderWrappers = document.querySelectorAll('.slider-wrapper');
+                sliderWrappers.forEach(wrapper => {
+                    const slider = wrapper.querySelector('input[type="range"]');
+                    const wrapperHeight = wrapper.clientHeight;
+                    slider.style.width = `${wrapperHeight}px`;
                 });
             }
 
@@ -468,12 +647,13 @@
 
             // Toggle Play/Pause
             function togglePlayPause() {
+                const playPauseIcon = document.getElementById('play-pause-icon');
                 if (isPlaying) {
                     clearInterval(timerID);
                     isPlaying = false;
-                    playPauseButton.innerHTML = '<i class="bi bi-play-fill"></i>';
-                    playPauseButton.classList.remove('btn-danger');
-                    playPauseButton.classList.add('btn-primary');
+                    playPauseIcon.classList.remove('pause');
+                    playPauseIcon.classList.add('play');
+                    playPauseButton.classList.remove('active');
                     // Do not remove highlight to keep it on current beat
                 } else {
                     if (audioContext.state === 'suspended') {
@@ -482,20 +662,21 @@
                     scheduledTime = audioContext.currentTime;
                     timerID = setInterval(scheduler, lookahead);
                     isPlaying = true;
-                    playPauseButton.innerHTML = '<i class="bi bi-pause-fill"></i>';
-                    playPauseButton.classList.remove('btn-primary');
-                    playPauseButton.classList.add('btn-danger');
+                    playPauseIcon.classList.remove('play');
+                    playPauseIcon.classList.add('pause');
+                    playPauseButton.classList.add('active'); // Add active class
                 }
             }
 
             // Stop Playback
             function stopPlayback() {
+                const playPauseIcon = document.getElementById('play-pause-icon');
                 if (isPlaying) {
                     clearInterval(timerID);
                     isPlaying = false;
-                    playPauseButton.innerHTML = '<i class="bi bi-play-fill"></i>';
-                    playPauseButton.classList.remove('btn-danger');
-                    playPauseButton.classList.add('btn-primary');
+                    playPauseIcon.classList.remove('pause');
+                    playPauseIcon.classList.add('play');
+                    playPauseButton.classList.remove('active');
                 }
                 currentBeat = 0;
                 scheduledTime = audioContext.currentTime;
@@ -511,6 +692,13 @@
                 bpmValue.textContent = `${tempo} BPM`;
             }
 
+            // Resume AudioContext on user interaction
+            document.body.addEventListener('click', () => {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }, { once: true });
+
             return {
                 init
             };
@@ -519,7 +707,5 @@
         // Initialize the Beatmaker
         BeatmakerModule.init();
     </script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
