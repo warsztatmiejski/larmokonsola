@@ -1,2 +1,3 @@
-# larmokonsola
-Simple industrial beatmaker
+# Larmokonsola
+Industrial beatmaker: 
+https://warsztatmiejski.github.io/larmokonsola/
