@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta Tags and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Larmokonsola – Warsztat Miejski</title>
-    <!-- Custom Font -->
+
     <style>
         @font-face {
             font-family: "Data 70";
             src: url("fonts/Data70.woff2") format("woff2");
         }
         :root {
-            --key-color: rgb(245, 25, 0); /* Declare key color variable */
+            --key-color: rgb(245, 25, 0);
         }
-        /* General Styles */
+
         body {
             font-family: "Data 70", sans-serif;
             margin: 0;
@@ -26,8 +25,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* Beatmaker Container */
         #beatmaker-container {
             flex: 1;
             display: flex;
@@ -35,8 +32,6 @@
             width: 100%;
             height: 100%;
         }
-
-        /* Controls */
         #controls {
             display: flex;
             flex-direction: row;
@@ -46,7 +41,6 @@
             background: #222;
             box-sizing: border-box;
         }
-
         #logo {
             font-size: 2em;
             margin: 0;
@@ -54,18 +48,15 @@
             letter-spacing: 1px;
             color: var(--key-color); /* Use key color variable */
         }
-
         #logo span {
             font-size: 0.8em;
             color: #fff;
         }
-
         #global-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         #global-controls .btn {
             display: flex;
             align-items: center;
@@ -78,8 +69,6 @@
             font-size: 1.2em;
             min-width: 80px;
         }
-
-        /* Button Icons */
         #play-pause-icon,
         #stop-icon {
             width: 16px;
@@ -88,61 +77,45 @@
             background-repeat: no-repeat;
             display: inline-block;
         }
-
-        /* Play/Pause Icon */
         #play-pause-icon.play {
             background-image: url('icons/play.svg');
         }
-
         #play-pause-icon.pause {
             background-image: url('icons/pause.svg');
         }
-
-        /* Stop Icon */
         #stop-icon {
             background-image: url('icons/stop.svg');
         }
-
-        /* Add pressed state for play button */
         #play-pause.active {
             background: #666;
         }
-
         .tempo-control {
 
         }
-
-        /* Custom Range Input Styles */
         input[type="range"] {
             -webkit-appearance: none;
             background: transparent;
             margin: 0;
             padding: 0;
         }
-
-        /* BPM Slider */
         input[type="range"].bpm-slider {
             width: 150px;
         }
-
         input[type="range"].bpm-slider::-webkit-slider-runnable-track {
             width: 100%;
             height: 4px;
             margin-top: -14px;
             background: #555;
         }
-
         input[type="range"].bpm-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 32px; /* Changed back to 32px */
+            width: 32px;
             height: 32px;
             background: var(--key-color) url('icons/tempo.svg') center no-repeat;
             background-size: 24px 24px;
             cursor: pointer;
-            margin-top: -14px; /* Center the thumb on the track */
+            margin-top: -14px;
         }
-
-        /* Common Slider Styles */
         input[type="range"]::-webkit-slider-runnable-track {
             height: 2px;
             background: #fff;
@@ -159,7 +132,6 @@
             background-size: 16px 16px;
             cursor: pointer;
             margin-top: -10px; /* Center the thumb on the track */
-
         }
         input[type="range"]:focus {
             outline: none;
@@ -167,28 +139,21 @@
         input[type="range"]:focus::-webkit-slider-runnable-track {
             background: #ccc;
         }
-
-        /* Custom Thumb Styles for Volume and Rate Sliders */
         .volume-slider::-webkit-slider-thumb {
             background-image: url('icons/volume.svg');
             transform: rotate(90deg);
             transform-origin: center;
         }
-
         .rate-slider::-webkit-slider-thumb {
             background-image: url('icons/rate.svg');
             transform: rotate(90deg);
             transform-origin: center;
         }
-
-        /* BPM Value Styling */
         #bpm-value {
             font-size: 1.5em;
             margin-left: 8px;
             line-height: 32px;
         }
-
-        /* Beatmaker Grid */
         #beatmaker {
             flex: 1;
             display: flex;
@@ -197,8 +162,6 @@
             overflow-y: auto;
             box-sizing: border-box;
         }
-
-        /* Track */
         .track {
             display: flex;
             align-items: stretch;
@@ -206,8 +169,6 @@
             margin-top: 8px;
             flex: 1;
         }
-
-        /* Controls Wrapper */
         .control-wrapper {
             position: relative;
             display: flex;
@@ -218,8 +179,6 @@
             background-color: var(--beat-color);
             background-color: #444;
         }
-
-        /* Control Background */
         .control-bg {
             position: absolute;
             top: 0;
@@ -232,7 +191,6 @@
             filter: saturate(50%);
             opacity: 0.25;
         }
-
         .control-wrapper .track-name {
             font-size: 1.5em;
             text-transform: uppercase;
@@ -246,31 +204,23 @@
             z-index: 1;
             color: white;
         }
-
-        /* Spacing between track range inputs */
         .control-wrapper .sliders-container {
             flex: 1;
             position: relative;
             /* Fixed width */
             min-width: 80px;
         }
-
-        /* Slider Wrappers */
         .slider-wrapper {
             position: absolute;
             width: 50%;
             height: 100%;
         }
-
         .slider-wrapper.volume-slider-wrapper {
             left: 0;
         }
-
         .slider-wrapper.rate-slider-wrapper {
             right: 0;
         }
-
-        /* Rotate Sliders */
         .slider-wrapper input[type="range"] {
             position: absolute;
             left: 50%;
@@ -280,8 +230,6 @@
             width: 100%; /* Will be adjusted via JavaScript */
             margin: 0;
         }
-
-        /* Beat Grid */
         .beat-grid {
             display: grid;
             grid-template-columns: repeat(16, 1fr);
@@ -289,8 +237,6 @@
             width: 100%;
             height: 100%;
         }
-
-        /* Beat */
         .beat {
             width: 100%;
             height: 100%;
@@ -302,13 +248,10 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-
-        /* Selected Beat Background Color */
         .beat.active {
             background-color: var(--beat-color);
             box-shadow: 0 0 30px rgba(0,0,0,0.75) inset;
         }
-
         .beat .beat-image {
             position: absolute;
             top: 0;
@@ -320,35 +263,28 @@
             opacity: 0;
             mix-blend-mode: overlay; /* Use overlay blend mode */
         }
-
         .beat.active .beat-image {
             opacity: 1;
         }
-
         .beat.highlight {
             background-color: rgba(255, 255, 255, 0.35);
             box-shadow: 0 0 30px rgba(0,0,0,0.85) inset;
         }
-
         .beat.highlight.active {
             background-color: rgba(255, 255, 255, 0.95);
         }
 
-        /* Responsive Styles */
         @media (max-width: 768px) {
             #global-controls {
                 flex-direction: column;
             }
-
             .control-wrapper {
                 min-width: 60px;
             }
-
             .sliders-container {
                 width: 40px;
                 min-width: 40px;
             }
-
             .beat-grid {
                 grid-template-columns: repeat(16, 1fr);
             }
@@ -375,7 +311,6 @@
         <div id="beatmaker"></div>
     </div>
 
-    <!-- JavaScript Code -->
     <script>
         // Audio and Sound Management Module
         const AudioModule = (() => {
