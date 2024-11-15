@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta Tags and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Larmokonsola – Warsztat Miejski</title>
-
+    <title>LARMO! konsola – Warsztat Miejski</title>
+    <!-- Custom Font -->
     <style>
         @font-face {
             font-family: "Data 70";
@@ -13,7 +14,6 @@
         :root {
             --key-color: rgb(245, 25, 0);
         }
-
         body {
             font-family: "Data 70", sans-serif;
             margin: 0;
@@ -46,7 +46,7 @@
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--key-color); /* Use key color variable */
+            color: var(--key-color);
         }
         #logo span {
             font-size: 0.8em;
@@ -67,10 +67,11 @@
             color: white;
             cursor: pointer;
             font-size: 1.2em;
-            min-width: 80px;
+            min-width: 60px;
         }
         #play-pause-icon,
-        #stop-icon {
+        #clear-icon,
+        #load-icon {
             width: 16px;
             height: 16px;
             background-size: contain;
@@ -83,14 +84,59 @@
         #play-pause-icon.pause {
             background-image: url('icons/pause.svg');
         }
-        #stop-icon {
-            background-image: url('icons/stop.svg');
+        #clear-icon {
+            background-image: url('icons/clear.svg');
+        }
+        #load-icon {
+            background-image: url('icons/load.svg');
         }
         #play-pause.active {
             background: #666;
         }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2em;
+            min-width: 80px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            z-index: 1;
+            top: 100%;
+            left: 0;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            text-transform: uppercase;
+            display: block;
+            font-size: 1.2em;
+        }
+        .dropdown-content a:hover {
+            background-color: #555;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
         .tempo-control {
-
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         input[type="range"] {
             -webkit-appearance: none;
@@ -104,7 +150,7 @@
         input[type="range"].bpm-slider::-webkit-slider-runnable-track {
             width: 100%;
             height: 4px;
-            margin-top: -14px;
+            margin-top: 0px;
             background: #555;
         }
         input[type="range"].bpm-slider::-webkit-slider-thumb {
@@ -131,7 +177,7 @@
             background-repeat: no-repeat;
             background-size: 16px 16px;
             cursor: pointer;
-            margin-top: -10px; /* Center the thumb on the track */
+            margin-top: -10px;
         }
         input[type="range"]:focus {
             outline: none;
@@ -195,7 +241,7 @@
             font-size: 1.5em;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px; /* Add spacing below track name */
+            margin-bottom: 10px;
         }
         .control-wrapper .track-name,
         .control-wrapper .form-label,
@@ -207,7 +253,6 @@
         .control-wrapper .sliders-container {
             flex: 1;
             position: relative;
-            /* Fixed width */
             min-width: 80px;
         }
         .slider-wrapper {
@@ -227,7 +272,7 @@
             top: 50%;
             transform: translate(-50%, -50%) rotate(270deg);
             transform-origin: center;
-            width: 100%; /* Will be adjusted via JavaScript */
+            width: 100%;
             margin: 0;
         }
         .beat-grid {
@@ -238,6 +283,7 @@
             height: 100%;
         }
         .beat {
+            box-sizing: border-box;
             width: 100%;
             height: 100%;
             cursor: pointer;
@@ -261,7 +307,7 @@
             background-size: cover;
             background-position: center;
             opacity: 0;
-            mix-blend-mode: overlay; /* Use overlay blend mode */
+            mix-blend-mode: overlay;
         }
         .beat.active .beat-image {
             opacity: 1;
@@ -273,7 +319,36 @@
         .beat.highlight.active {
             background-color: rgba(255, 255, 255, 0.95);
         }
-
+        .beat-grid .beat:nth-child(4n+1) {
+            border-left: 1px solid #444;
+        }
+        .beat-grid .beat:nth-child(4n+4) {
+            border-right: 1px solid #444;
+        }
+        #footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            background: #222;
+            color: #fff;
+            padding: 8px 16px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #footer p {
+            display: inline-block;
+            margin: 0;
+        }
+        #footer #wm-logo {
+            width: 150px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            display: inline-block;
+            background-image: url('icons/wm-logo.svg');
+        }
         @media (max-width: 768px) {
             #global-controls {
                 flex-direction: column;
@@ -294,14 +369,24 @@
 <body>
     <div id="beatmaker-container">
         <div id="controls">
-            <div id="logo">Larmokonsola <span>v0.1</span></div>
+            <div id="logo">Larmo! <span>konsola</span></div>
             <div id="global-controls">
                 <button id="play-pause" class="btn">
                     <span id="play-pause-icon" class="play"></span>
                 </button>
-                <button id="stop" class="btn">
-                    <span id="stop-icon"></span>
+                <!-- Clear All Button (now also stops the music) -->
+                <button id="clear-all" class="btn">
+                    <span id="clear-icon"></span>
                 </button>
+                <!-- Dropdown Menu for Patterns with Icon -->
+                <div class="dropdown">
+                    <button class="dropdown-button btn">
+                        <span id="load-icon"></span>
+                    </button>
+                    <div class="dropdown-content" id="pattern-list">
+                        <!-- Pattern items will be inserted here -->
+                    </div>
+                </div>
                 <div class="tempo-control">
                     <input type="range" id="tempo-slider" class="form-range bpm-slider" min="60" max="180" value="100">
                     <span id="bpm-value">100 BPM</span>
@@ -309,10 +394,15 @@
             </div>
         </div>
         <div id="beatmaker"></div>
+        <!-- Footer -->
+        <div id="footer">
+            <div id="wm-logo"></div>
+            <p>Więcej dźwięków na naszym stanowisku na antresoli<span id="schodki"></span></p>
+        </div>
     </div>
 
+    <!-- JavaScript Code -->
     <script>
-        // Audio and Sound Management Module
         const AudioModule = (() => {
             const audioFolder = 'audio/';
             const imageFolder = 'images/';
@@ -321,13 +411,9 @@
                 { name: 'Fabr.1', audio: 'fabryka.wav', image: 'fabryka.jpg' },
                 { name: 'Cyk', audio: 'hihat.wav', image: 'cyk.jpg' },
                 { name: 'Bang', audio: 'bang.wav', image: 'bang.jpg' }
-                // Add more sounds as needed
             ];
-
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             let soundBuffers = [];
-
-            // Load audio files into buffers
             async function loadSounds() {
                 for (let sound of soundLibrary) {
                     try {
@@ -340,7 +426,6 @@
                     }
                 }
             }
-
             return {
                 audioContext,
                 soundLibrary,
@@ -350,10 +435,8 @@
             };
         })();
 
-        // Beatmaker Module
         const BeatmakerModule = (() => {
             const { audioContext, soundLibrary, soundBuffers, loadSounds, imageFolder } = AudioModule;
-
             const numTracks = soundLibrary.length;
             const numBeats = 16;
             let beatGrid = Array.from({ length: numTracks }, () => Array(numBeats).fill(false));
@@ -361,72 +444,75 @@
             let isPlaying = false;
             let tempo = 100;
             let scheduledTime = 0;
-            let lookahead = 25.0; // How frequently to call scheduling function (in milliseconds)
-            let scheduleAheadTime = 0.1; // How far ahead to schedule audio (in seconds)
+            let lookahead = 25.0;
+            let scheduleAheadTime = 0.1;
             let timerID;
-
             const playbackRates = Array(numTracks).fill(1.0);
             const volumes = Array(numTracks).fill(1.0);
-
             const beatmakerDiv = document.getElementById('beatmaker');
             const playPauseButton = document.getElementById('play-pause');
-            const stopButton = document.getElementById('stop');
             const tempoSlider = document.getElementById('tempo-slider');
             const bpmValue = document.getElementById('bpm-value');
+            const clearAllButton = document.getElementById('clear-all');
+            const patternListDiv = document.getElementById('pattern-list');
 
-            // Create Gain Nodes for volume control
+            const predefinedPatterns = [
+                {
+                    name: 'Hip-Hop Huta',
+                    tempo: 90,
+                    data: [
+                        { track: 0, volume: 0.8, rate: 1.0, beats: '1000100010001000' },
+                        { track: 1, volume: 0.7, rate: 1.0, beats: '0010001000100010' },
+                        { track: 2, volume: 1.0, rate: 1.0, beats: '0101010101010101' },
+                        { track: 3, volume: 0.9, rate: 1.0, beats: '1010101010101010' }
+                    ]
+                },
+                {
+                    name: 'Fa-Bryka',
+                    tempo: 120,
+                    data: [
+                        { track: 0, volume: 1.0, rate: 1.0, beats: '1100110011001100' },
+                        { track: 1, volume: 0.8, rate: 1.2, beats: '0011001100110011' },
+                        { track: 2, volume: 0.6, rate: 0.8, beats: '1001100110011001' },
+                        { track: 3, volume: 1.0, rate: 1.0, beats: '0110011001100110' }
+                    ]
+                }
+                // Add more patterns as needed
+            ];
+
             const gainNodes = Array(numTracks).fill(null).map(() => audioContext.createGain());
-
-            // Assign random colors to each track
             const trackColors = Array(numTracks).fill(null).map(() => getRandomColor());
 
-            // Initialize UI
             function init() {
                 createTrackControls();
                 loadSounds().then(() => {
                     updateUI();
                     setupEventListeners();
-                    updateSliderWidths(); // Initial update of slider widths
+                    updateSliderWidths();
+                    populatePatternList();
                 });
             }
 
-            // Create Track Controls
             function createTrackControls() {
                 for (let i = 0; i < numTracks; i++) {
                     const trackDiv = document.createElement('div');
                     trackDiv.classList.add('track');
-
                     const controlWrapper = document.createElement('div');
                     controlWrapper.classList.add('control-wrapper');
-
-                    // Use trackColors[i] directly
                     const beatColor = trackColors[i];
-
-                    // Set CSS variable for beat color
                     controlWrapper.style.setProperty('--beat-color', beatColor);
-
-                    // Create control background div
                     const controlBgDiv = document.createElement('div');
                     controlBgDiv.classList.add('control-bg');
                     controlBgDiv.style.backgroundImage = `url(${imageFolder}${soundLibrary[i].image})`;
-
                     controlWrapper.appendChild(controlBgDiv);
-
-                    // Track Name
                     const trackName = document.createElement('div');
                     trackName.classList.add('track-name');
                     trackName.textContent = soundLibrary[i].name;
                     controlWrapper.appendChild(trackName);
-
-                    // Sliders Container
                     const slidersContainer = document.createElement('div');
                     slidersContainer.classList.add('sliders-container');
-
-                    // Volume Slider Wrapper
                     const volumeWrapper = document.createElement('div');
                     volumeWrapper.classList.add('slider-wrapper', 'volume-slider-wrapper');
-
-                    // Volume Slider
                     const volumeInput = document.createElement('input');
                     volumeInput.type = 'range';
                     volumeInput.classList.add('form-range', 'volume-slider');
@@ -434,18 +520,15 @@
                     volumeInput.max = '1';
                     volumeInput.step = '0.01';
                     volumeInput.value = '1.0';
+                    volumeInput.dataset.trackIndex = i;
                     volumeInput.addEventListener('input', (e) => {
-                        volumes[i] = parseFloat(e.target.value);
-                        gainNodes[i].gain.value = volumes[i];
+                        const trackIdx = parseInt(e.target.dataset.trackIndex);
+                        volumes[trackIdx] = parseFloat(e.target.value);
+                        gainNodes[trackIdx].gain.value = volumes[trackIdx];
                     });
-
                     volumeWrapper.appendChild(volumeInput);
-
-                    // Playback Rate Slider Wrapper
                     const rateWrapper = document.createElement('div');
                     rateWrapper.classList.add('slider-wrapper', 'rate-slider-wrapper');
-
-                    // Playback Rate Slider
                     const playbackRateInput = document.createElement('input');
                     playbackRateInput.type = 'range';
                     playbackRateInput.classList.add('form-range', 'rate-slider');
@@ -453,40 +536,28 @@
                     playbackRateInput.max = '2.0';
                     playbackRateInput.step = '0.01';
                     playbackRateInput.value = '1.0';
+                    playbackRateInput.dataset.trackIndex = i;
                     playbackRateInput.addEventListener('input', (e) => {
-                        playbackRates[i] = parseFloat(e.target.value);
+                        const trackIdx = parseInt(e.target.dataset.trackIndex);
+                        playbackRates[trackIdx] = parseFloat(e.target.value);
                     });
-
                     rateWrapper.appendChild(playbackRateInput);
-
-                    // Append slider wrappers to sliders container
                     slidersContainer.appendChild(volumeWrapper);
                     slidersContainer.appendChild(rateWrapper);
-
-                    // Append sliders container to control wrapper
                     controlWrapper.appendChild(slidersContainer);
-
                     trackDiv.appendChild(controlWrapper);
-
                     const beatGridDiv = document.createElement('div');
                     beatGridDiv.classList.add('beat-grid');
-
                     for (let beat = 0; beat < numBeats; beat++) {
                         const beatDiv = document.createElement('div');
                         beatDiv.classList.add('beat');
                         beatDiv.dataset.track = i;
                         beatDiv.dataset.beat = beat;
-
-                        // Create beatImageDiv inside beatDiv
                         const beatImageDiv = document.createElement('div');
                         beatImageDiv.classList.add('beat-image');
                         beatImageDiv.style.backgroundImage = `url(${imageFolder}${soundLibrary[i].image})`;
-
                         beatDiv.appendChild(beatImageDiv);
-
-                        // Set CSS variable for beat color when selected
                         beatDiv.style.setProperty('--beat-color', beatColor);
-
                         beatDiv.addEventListener('click', () => {
                             beatGrid[i][beat] = !beatGrid[i][beat];
                             beatDiv.classList.toggle('active', beatGrid[i][beat]);
@@ -498,17 +569,78 @@
                 }
             }
 
-            // Event Listeners
+            function populatePatternList() {
+                predefinedPatterns.forEach((pattern, index) => {
+                    const patternItem = document.createElement('a');
+                    patternItem.href = '#';
+                    patternItem.textContent = pattern.name;
+                    patternItem.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        loadPattern(index);
+                    });
+                    patternListDiv.appendChild(patternItem);
+                });
+            }
+
+            function loadPattern(index) {
+                const pattern = predefinedPatterns[index];
+                if (pattern) {
+                    clearAllTracks();
+                    tempo = pattern.tempo || 100;
+                    tempoSlider.value = tempo;
+                    bpmValue.textContent = `${tempo} BPM`;
+                    pattern.data.forEach(item => {
+                        const trackIdx = item.track;
+                        volumes[trackIdx] = item.volume;
+                        gainNodes[trackIdx].gain.value = item.volume;
+                        playbackRates[trackIdx] = item.rate;
+                        const volumeSlider = document.querySelector(`.volume-slider[data-track-index='${trackIdx}']`);
+                        if (volumeSlider) {
+                            volumeSlider.value = item.volume;
+                        }
+                        const rateSlider = document.querySelector(`.rate-slider[data-track-index='${trackIdx}']`);
+                        if (rateSlider) {
+                            rateSlider.value = item.rate;
+                        }
+                        const beats = item.beats.split('').map(char => char === '1');
+                        beatGrid[trackIdx] = beats;
+                    });
+                    updateBeatGridUI();
+                }
+            }
+
+            function updateBeatGridUI() {
+                for (let track = 0; track < numTracks; track++) {
+                    for (let beat = 0; beat < numBeats; beat++) {
+                        const beatDiv = document.querySelector(`.beat[data-track='${track}'][data-beat='${beat}']`);
+                        if (beatDiv) {
+                            beatDiv.classList.toggle('active', beatGrid[track][beat]);
+                        }
+                    }
+                }
+            }
+
+            function clearAllTracks() {
+                beatGrid = Array.from({ length: numTracks }, () => Array(numBeats).fill(false));
+                updateBeatGridUI();
+                volumes.fill(1.0);
+                playbackRates.fill(1.0);
+                document.querySelectorAll('.volume-slider').forEach(slider => slider.value = 1.0);
+                document.querySelectorAll('.rate-slider').forEach(slider => slider.value = 1.0);
+                gainNodes.forEach(node => node.gain.value = 1.0);
+                tempo = 100;
+                tempoSlider.value = tempo;
+                bpmValue.textContent = `${tempo} BPM`;
+                stopPlayback();
+            }
+
             function setupEventListeners() {
                 playPauseButton.addEventListener('click', togglePlayPause);
-                stopButton.addEventListener('click', stopPlayback);
-
+                clearAllButton.addEventListener('click', clearAllTracks);
                 tempoSlider.addEventListener('input', (e) => {
                     tempo = e.target.value;
                     bpmValue.textContent = `${tempo} BPM`;
                 });
-
-                // Touch support for mobile devices
                 const beatDivs = document.querySelectorAll('.beat');
                 beatDivs.forEach(beatDiv => {
                     beatDiv.addEventListener('touchstart', (e) => {
@@ -519,12 +651,9 @@
                         beatDiv.classList.toggle('active', beatGrid[track][beat]);
                     });
                 });
-
-                // Update slider widths on window resize
                 window.addEventListener('resize', updateSliderWidths);
             }
 
-            // Update Slider Widths
             function updateSliderWidths() {
                 const sliderWrappers = document.querySelectorAll('.slider-wrapper');
                 sliderWrappers.forEach(wrapper => {
@@ -534,7 +663,6 @@
                 });
             }
 
-            // Play Sound
             function playSound(buffer, time, trackIndex) {
                 if (buffer) {
                     const source = audioContext.createBufferSource();
@@ -545,7 +673,6 @@
                 }
             }
 
-            // Scheduler
             function scheduler() {
                 while (scheduledTime < audioContext.currentTime + scheduleAheadTime) {
                     scheduleBeat(currentBeat, scheduledTime);
@@ -554,7 +681,6 @@
                 }
             }
 
-            // Schedule a Beat
             function scheduleBeat(beatNumber, time) {
                 for (let track = 0; track < numTracks; track++) {
                     if (beatGrid[track][beatNumber]) {
@@ -564,15 +690,11 @@
                 highlightBeat(beatNumber);
             }
 
-            // Highlight Beat
             function highlightBeat(beatNumber) {
-                // Remove 'highlight' class from all beats
                 const highlightedBeats = document.querySelectorAll('.beat.highlight');
                 highlightedBeats.forEach(beatDiv => {
                     beatDiv.classList.remove('highlight');
                 });
-
-                // Add 'highlight' class to current beats
                 for (let track = 0; track < numTracks; track++) {
                     const beatDiv = document.querySelector(`.beat[data-track='${track}'][data-beat='${beatNumber}']`);
                     if (beatDiv) {
@@ -581,20 +703,13 @@
                 }
             }
 
-            // Generate Random Color with Controlled Saturation and Lightness
             function getRandomColor() {
-                // Generate a random hue between 0 and 360 degrees
                 const hue = Math.floor(Math.random() * 360);
-                // Set saturation between 70% and 100% for vivid colors
-                const saturation = Math.floor(Math.random() * (100 - 70 + 1)) + 70; // 70% to 100%
-                // Set lightness between 20% and 40% to avoid too dark or too light colors
-                const lightness = Math.floor(Math.random() * (40 - 20 + 1)) + 20; // 20% to 40%
-
-                // Return the HSL color string
+                const saturation = Math.floor(Math.random() * (100 - 70 + 1)) + 70;
+                const lightness = Math.floor(Math.random() * (40 - 20 + 1)) + 20;
                 return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
             }
 
-            // Toggle Play/Pause
             function togglePlayPause() {
                 const playPauseIcon = document.getElementById('play-pause-icon');
                 if (isPlaying) {
@@ -603,7 +718,6 @@
                     playPauseIcon.classList.remove('pause');
                     playPauseIcon.classList.add('play');
                     playPauseButton.classList.remove('active');
-                    // Do not remove highlight to keep it on current beat
                 } else {
                     if (audioContext.state === 'suspended') {
                         audioContext.resume();
@@ -613,11 +727,10 @@
                     isPlaying = true;
                     playPauseIcon.classList.remove('play');
                     playPauseIcon.classList.add('pause');
-                    playPauseButton.classList.add('active'); // Add active class
+                    playPauseButton.classList.add('active');
                 }
             }
 
-            // Stop Playback
             function stopPlayback() {
                 const playPauseIcon = document.getElementById('play-pause-icon');
                 if (isPlaying) {
@@ -629,19 +742,16 @@
                 }
                 currentBeat = 0;
                 scheduledTime = audioContext.currentTime;
-                // Remove highlight from all beats
                 const highlightedBeats = document.querySelectorAll('.beat.highlight');
                 highlightedBeats.forEach(beatDiv => {
                     beatDiv.classList.remove('highlight');
                 });
             }
 
-            // Update UI
             function updateUI() {
                 bpmValue.textContent = `${tempo} BPM`;
             }
 
-            // Resume AudioContext on user interaction
             document.body.addEventListener('click', () => {
                 if (audioContext.state === 'suspended') {
                     audioContext.resume();
@@ -653,7 +763,6 @@
             };
         })();
 
-        // Initialize the Beatmaker
         BeatmakerModule.init();
     </script>
 </body>
