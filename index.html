@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>LARMO! konsola – Warsztat Miejski</title>
-	<link href="include/style.css" rel="stylesheet">
+	<link href="include/style.css?v=0.19221811" rel="stylesheet">
 </head>
 
 <body>
@@ -13,17 +13,19 @@
 		<div id="controls">
 			<div id="logo">Larmo! <span>konsola</span></div>
 			<div id="global-controls">
-				<button id="play-pause" class="btn">
-					<span id="play-pause-icon" class="play"></span>
-				</button>
-				<button id="clear-all" class="btn">
-					<span id="clear-icon"></span>
-				</button>
-				<div class="dropdown">
-					<button class="dropdown-button btn">
-						<span id="load-icon"></span>
+				<div id="buttons">
+					<button id="play-pause" class="btn">
+						<span id="play-pause-icon" class="play"></span>
 					</button>
-					<div class="dropdown-content" id="pattern-list"></div>
+					<button id="clear-all" class="btn">
+						<span id="clear-icon"></span>
+					</button>
+					<div class="dropdown">
+						<button class="dropdown-button btn">
+							<span id="load-icon"></span>
+						</button>
+						<div class="dropdown-content" id="pattern-list"></div>
+					</div>
 				</div>
 				<div class="tempo-control">
 					<input type="range" id="tempo-slider" class="form-range bpm-slider" min="60" max="180" value="100">
@@ -38,7 +40,7 @@
 		</div>
 	</div>
 
-	<script src="include/beatmaker.js"></script>
+	<script src="include/beatmaker.js?v=0.19221811"></script>
 </body>
 
 </html>

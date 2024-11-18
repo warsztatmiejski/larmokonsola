@@ -1,3 +1,7 @@
+// LARMO! konsola – simple beatmaker
+// by Aleksander Lenart @ Warsztat Miejski 2024
+// MIT license
+
 const AudioModule = (() => {
 	const audioFolder = 'audio/';
 	const imageFolder = 'images/';
@@ -9,6 +13,7 @@ const AudioModule = (() => {
 	];
 	const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 	let soundBuffers = [];
+
 	async function loadSounds() {
 		for (let sound of soundLibrary) {
 			try {
@@ -75,6 +80,12 @@ const BeatmakerModule = (() => {
 
 	const gainNodes = Array(numTracks).fill(null).map(() => audioContext.createGain());
 	const trackColors = Array(numTracks).fill(null).map(() => getRandomColor());
+	const colors = [
+		'ff0029', '377eb8', '66a61e', '984ea3',
+		'00d2d5', 'ff7f00', 'af8d00', '7f80cd',
+		'b3e900', 'c42e60', 'a65628', 'f781bf',
+		'8dd3c7', 'bebada', 'fb8072', '80b1d3'
+	];
 
 	function init() {
 		createTrackControls();
@@ -92,7 +103,8 @@ const BeatmakerModule = (() => {
 			trackDiv.classList.add('track');
 			const controlWrapper = document.createElement('div');
 			controlWrapper.classList.add('control-wrapper');
-			const beatColor = trackColors[i];
+			// const beatColor = trackColors[i];
+			const beatColor = '#' + colors[i];
 			controlWrapper.style.setProperty('--beat-color', beatColor);
 			const controlBgDiv = document.createElement('div');
 			controlBgDiv.classList.add('control-bg');
