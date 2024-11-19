@@ -283,7 +283,6 @@ const BeatmakerModule = (() => {
 
 		beatmakerDiv.addEventListener('scroll', event => {
 			const {scrollHeight, scrollTop, clientHeight} = event.target;
-			//console.log("scrollHeight:"+scrollHeight+" scrollTop:"+scrollTop+" clientHeight:"+clientHeight);
 			if (Math.abs(scrollTop) < 8) {
 				controlsDiv.classList.remove("shadow");
 			} else {
