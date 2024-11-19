@@ -6,10 +6,18 @@ const AudioModule = (() => {
 	const audioFolder = 'audio/';
 	const imageFolder = 'images/';
 	const soundLibrary = [
-		{ name: 'Masz.1', audio: 'maszyna.wav', image: 'maszyna.jpg' },
-		{ name: 'Fabr.1', audio: 'fabryka.wav', image: 'fabryka.jpg' },
-		{ name: 'Cyk', audio: 'hihat.wav', image: 'cyk.jpg' },
-		{ name: 'Bang', audio: 'bang.wav', image: 'bang.jpg' }
+		{ name: 'Pik', audio: 'pik.wav', image: 'pik.jpg' },
+		{ name: 'Wajzer', audio: 'zegar.wav', image: 'cyk.jpg' },
+		{ name: 'Dinks', audio: 'klik.wav', image: 'klik.jpg' },
+		{ name: 'Klapa', audio: 'klapa.wav', image: 'bang.jpg' },
+		{ name: 'Ambos', audio: 'kowal.wav', image: 'kowal.jpg' },
+		{ name: 'Zinger', audio: 'maszyna.wav', image: 'maszyna.jpg' },
+		{ name: 'Faustlik', audio: 'mlot.wav', image: 'mlot.jpg' },
+		{ name: 'Szlauch', audio: 'syk.wav', image: 'syk.jpg' },
+		{ name: 'Prąd', audio: 'prad.wav', image: 'prad.jpg' },
+		{ name: 'Ruła', audio: 'rura.wav', image: 'rura.jpg' },
+		{ name: 'Stop', audio: 'stop.wav', image: 'stop.jpg' },
+		{ name: 'Hej!', audio: 'hej.wav', image: 'hej.jpg' }
 	];
 	const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 	let soundBuffers = [];
@@ -58,21 +66,34 @@ const BeatmakerModule = (() => {
 
 	const predefinedPatterns = [
 		{
-			name: 'Hip-Hop Huta',
-			tempo: 90,
+			name: 'Hip Hop Huta',
+			tempo: 95,
 			data: [
-				{ track: 0, volume: 0.8, rate: 1.0, beats: '1000100010001000' },
-				{ track: 2, volume: 1.0, rate: 1.0, beats: '0101010101010101' },
-				{ track: 3, volume: 0.9, rate: 1.0, beats: '1010101010101010' }
+				{ track: 1, volume: 2.0, rate: 1.8, beats: '0001000100010001' },
+				{ track: 2, volume: 1.0, rate: 1.0, beats: '0010001000000000' },
+				{ track: 3, volume: 0.8, rate: 1.0, beats: '0000000100000000' },
+				{ track: 4, volume: 1.0, rate: 0.6, beats: '0000000000001000' },
+				{ track: 6, volume: 1.0, rate: 1.0, beats: '1000100010001000' },
+				{ track: 7, volume: 0.2, rate: 2.0, beats: '0000000000001000' },
+				{ track: 8, volume: 1.0, rate: 1.0, beats: '0001000000000000' },
+				{ track: 10, volume: 1.0, rate: 1.0, beats: '0000000000100000' },
+				{ track: 11, volume: 1.0, rate: 1.0, beats: '0000000000001001' }
 			]
 		},
 		{
-			name: 'Fa-Bryka',
+			name: 'Hercklekoty',
 			tempo: 120,
 			data: [
-				{ track: 0, volume: 1.0, rate: 1.0, beats: '1100110011001100' },
-				{ track: 1, volume: 0.8, rate: 1.2, beats: '0011001100110011' },
-				{ track: 3, volume: 1.0, rate: 1.0, beats: '0110011001100110' }
+				{ track: 0, volume: 0.3, rate: 1.0, beats: '0000000000100010' },
+				{ track: 1, volume: 1.5, rate: 1.0, beats: '0100010001001100' },
+				{ track: 2, volume: 1.0, rate: 1.4, beats: '0001001100000001' },
+				{ track: 4, volume: 0.7, rate: 0.8, beats: '0000100000001000' },
+				{ track: 5, volume: 0.3, rate: 2.0, beats: '0011010000110000' },
+				{ track: 6, volume: 1.0, rate: 0.6, beats: '1000000010000000' },
+				{ track: 8, volume: 1.0, rate: 0.8, beats: '0010000000100010' },
+				{ track: 9, volume: 1.0, rate: 0.8, beats: '0100000001000000' },
+				{ track: 10, volume: 1.0, rate: 1.8, beats: '0000000000100000' },
+				{ track: 11, volume: 0.3, rate: 2.0, beats: '0000001111000000' }
 			]
 		}
 		// Add more patterns as needed
@@ -122,7 +143,7 @@ const BeatmakerModule = (() => {
 			volumeInput.type = 'range';
 			volumeInput.classList.add('form-range', 'volume-slider');
 			volumeInput.min = '0';
-			volumeInput.max = '1';
+			volumeInput.max = '2';
 			volumeInput.step = '0.01';
 			volumeInput.value = '1.0';
 			volumeInput.dataset.trackIndex = i;
