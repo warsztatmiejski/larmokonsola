@@ -63,6 +63,8 @@ const BeatmakerModule = (() => {
 	const bpmValue = document.getElementById('bpm-value');
 	const clearAllButton = document.getElementById('clear-all');
 	const patternListDiv = document.getElementById('pattern-list');
+	const controlsDiv = document.getElementById('controls');
+	const footerDiv = document.getElementById('footer');
 
 	const predefinedPatterns = [
 		{
@@ -278,6 +280,24 @@ const BeatmakerModule = (() => {
 			});
 		});
 		window.addEventListener('resize', updateSliderWidths);
+
+		beatmakerDiv.addEventListener('scroll', event => {
+			const {scrollHeight, scrollTop, clientHeight} = event.target;
+			//console.log("scrollHeight:"+scrollHeight+" scrollTop:"+scrollTop+" clientHeight:"+clientHeight);
+			if (Math.abs(scrollTop) < 8) {
+				controlsDiv.classList.remove("shadow");
+			} else {
+				controlsDiv.classList.add("shadow");
+				console.log("top shadow");
+			}
+
+			if (Math.abs(scrollHeight - clientHeight - scrollTop) < 8) {
+				footerDiv.classList.remove("shadow");
+			} else {
+				footerDiv.classList.add("shadow");
+			}
+
+		});
 	}
 
 	function updateSliderWidths() {
