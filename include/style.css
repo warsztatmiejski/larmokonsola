@@ -45,6 +45,7 @@ html, body {
 	position: relative;
 	z-index: 1;
 	padding: 8px 16px;
+	border-bottom: 1px solid #3a3a3a;
 	background: #2a2a2a url('../images/noise-1.svg');
 	box-sizing: border-box;
 	transition: box-shadow .75s ease-in-out;
@@ -382,6 +383,7 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	background: #2a2a2a url('../images/noise-1.svg');
 	color: #fff;
 	padding: 8px 16px;
+	border-top: 1px solid #3a3a3a;
 	transition: box-shadow .75s ease-in-out;
 	box-shadow: 0px -20px 40px 20px rgba(0,0,0,0.25);
 }
@@ -417,6 +419,9 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 		flex-direction: column;
 		align-items: stretch;
 	}
+	#logo span {
+		font-size: 1.25rem;
+	}
 	#global-controls .btn {
 		flex: 1;
 	}
@@ -426,6 +431,9 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	}
 	input[type="range"].bpm-slider {
 		width: 120px;
+	}
+	#bpm-value {
+		font-size: 1.25rem;
 	}
 	.control-wrapper {
 		min-width: 60px;
@@ -437,7 +445,11 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	.beat-grid {
 		grid-template-columns: repeat(16, 1fr);
 	}
+	#footer {
+		justify-content: center;
+	}
 	#footer p {
+		display: none;
 		font-size: 1rem;
 	}
 }
