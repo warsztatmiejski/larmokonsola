@@ -7,15 +7,15 @@ const AudioModule = (() => {
 	const imageFolder = 'images/';
 	const soundLibrary = [
 		{ name: 'Pik', audio: 'pik.wav', image: 'pik.jpg' },
-		{ name: 'Wajzer', audio: 'zegar.wav', image: 'cyk.jpg' },
-		{ name: 'Dinks', audio: 'klik.wav', image: 'klik.jpg' },
+		{ name: 'Wajzer', audio: 'zegar.wav', image: 'zegar.jpg' },
+		{ name: 'Dinks', audio: 'klik.wav', image: 'pneu.jpg' },
 		{ name: 'Klapa', audio: 'klapa.wav', image: 'bang.jpg' },
-		{ name: 'Ambos', audio: 'kowal.wav', image: 'kowal.jpg' },
+		{ name: 'Ambos', audio: 'kowal.wav', image: 'kowadlo.jpg' },
 		{ name: 'Zinger', audio: 'maszyna.wav', image: 'maszyna.jpg' },
-		{ name: 'Faustlik', audio: 'mlot.wav', image: 'mlot.jpg' },
+		{ name: 'Faustlik', audio: 'mlot.wav', image: 'mlotek.jpg' },
 		{ name: 'Szlauch', audio: 'syk.wav', image: 'syk.jpg' },
 		{ name: 'Prąd', audio: 'prad.wav', image: 'prad.jpg' },
-		{ name: 'Ruła', audio: 'rura.wav', image: 'rura.jpg' },
+		{ name: 'Ruła', audio: 'rura.wav', image: 'rury.jpg' },
 		{ name: 'Stop', audio: 'stop.wav', image: 'stop.jpg' },
 		{ name: 'Hej!', audio: 'hej.wav', image: 'hej.jpg' }
 	];

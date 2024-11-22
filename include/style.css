@@ -44,7 +44,7 @@ html, body {
 	align-items: center;
 	position: relative;
 	z-index: 1;
-	padding: 8px 16px;
+	padding: 12px 16px;
 	border-bottom: 1px solid #3a3a3a;
 	background: #2a2a2a url('../images/noise-1.svg');
 	box-sizing: border-box;
@@ -257,7 +257,6 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	min-height: 80px;
 	padding: 8px;
 	border-radius: 3px;
-	/* background-color: var(--beat-color); */
 	background: #333 url('../images/noise-2.svg');
 }
 .control-bg {
@@ -271,8 +270,8 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	background-position: center;
 	mix-blend-mode: overlay;
 	background-color: #444;
-	filter: brightness(25%);
-	opacity: 0.5;
+	filter: brightness(35%);
+	opacity: 0.75;
 }
 .control-wrapper .track-name {
 	font-size: 1.25rem;
@@ -361,15 +360,16 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	content: "";
 	display: block;
 	position: absolute;
-	top: -4px;
-	bottom: -4px;
+	z-index: 2;
+	top: -8px;
+	bottom: -8px;
 	right: -2px;
 }
 .beat-grid .beat:nth-child(4n+1) {
 	/* border-left: 1px solid #444; */
 }
 .beat-grid .beat:nth-child(4n+4)::before {
-	border-right: 2px solid #333;
+	border-right: 2px solid #3a3a3a;
 }
 .beat-grid .beat:last-child::before {
 	border-right: none;
@@ -382,7 +382,7 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	position: relative;
 	background: #2a2a2a url('../images/noise-1.svg');
 	color: #fff;
-	padding: 8px 16px;
+	padding: 12px 16px;
 	border-top: 1px solid #3a3a3a;
 	transition: box-shadow .75s ease-in-out;
 	box-shadow: 0px -20px 40px 20px rgba(0,0,0,0.25);
@@ -393,6 +393,9 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	margin: 0;
 	letter-spacing: 1px;
 }
+#footer p span {
+	color: var(--key-color);
+}
 #footer #wm-logo {
 	width: 150px;
 	height: 40px;
@@ -401,7 +404,7 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	display: inline-block;
 	background-image: url('../icons/wm-logo.svg');
 }
-#footer #schodki {
+/* #footer #schodki {
 	width: 32px;
 	height: 32px;
 	background-size: contain;
@@ -410,7 +413,7 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	vertical-align: middle;
 	background-image: url('../images/schodki.svg');
 	margin-left: 16px;
-}
+} */
 #footer.shadow {
 	box-shadow: 0px -20px 40px 20px rgba(0,0,0,0.5);
 }
@@ -419,8 +422,11 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 		flex-direction: column;
 		align-items: stretch;
 	}
+	#controls {
+		padding: 8px 16px;
+	}
 	#logo span {
-		font-size: 1.25rem;
+		font-size: 1.3rem;
 	}
 	#global-controls .btn {
 		flex: 1;
@@ -433,7 +439,7 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 		width: 120px;
 	}
 	#bpm-value {
-		font-size: 1.25rem;
+		font-size: 1.3rem;
 	}
 	.control-wrapper {
 		min-width: 60px;
@@ -447,9 +453,9 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 	}
 	#footer {
 		justify-content: center;
+		padding: 8px 16px;
 	}
 	#footer p {
 		display: none;
-		font-size: 1rem;
 	}
 }
