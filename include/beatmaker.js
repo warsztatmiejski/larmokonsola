@@ -1,6 +1,7 @@
 // LARMO! konsola – simple beatmaker
 // by Aleksander Lenart @ Warsztat Miejski 2024
 // MIT license
+// Sounds from samplefocus.com
 
 const AudioModule = (() => {
 	const audioFolder = 'audio/';
