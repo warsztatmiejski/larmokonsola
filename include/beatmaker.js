@@ -96,7 +96,7 @@ const BeatmakerModule = (() => {
 				{ track: 8, volume: 1.0, rate: 0.8, beats: '0010000000100010' },
 				{ track: 9, volume: 1.0, rate: 0.8, beats: '0100000001000000' },
 				{ track: 10, volume: 1.0, rate: 1.8, beats: '0000000000100000' },
-				{ track: 11, volume: 0.3, rate: 2.0, beats: '0000001111000000' }
+				{ track: 11, volume: 0.8, rate: 2.0, beats: '0000001111000000' }
 			]
 		}
 		// Add more patterns as needed
